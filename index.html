@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raghav's Certification Dashboard</title>
+  <meta name="description"
+    content="Executive-level single-page analytics dashboard for Certification Programs — monitor Full Payment performance.">
+
+  <!-- External Libraries -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+f
+
+<body>
+
+  <div class="app-container">
+
+    <!-- ══ STICKY TOP HEADER ════════════════════════════ -->
+    <header class="sticky-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <div class="header-logo-dot"></div>
+          <h1 class="header-title">Raghav's Certification Dashboard</h1>
+        </div>
+        <div class="header-meta">
+          <span id="last-updated-text">Last updated: Just now</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Global Program Filter -->
+        <div class="global-select-wrap">
+          <span class="global-select-label">Program</span>
+          <select id="program-filter" class="program-select" onchange="onProgramChange(this.value)">
+            <option value="ALL">All Programs</option>
+            <option value="DataScience">Data Science</option>
+            <option value="FullStackDev">Full Stack Development</option>
+            <option value="AIML">AI & Machine Learning</option>
+            <option value="CyberSecurity">Cybersecurity</option>
+            <option value="CloudComputing">Cloud Computing</option>
+          </select>
+        </div>
+
+        <!-- Refresh Button -->
+        <button class="action-btn" onclick="handleRefresh()" id="refresh-btn" title="Refresh Dashboard">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            id="refresh-icon">
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </svg>
+        </button>
+
+        <!-- Light/Dark Mode Toggle -->
+        <button class="action-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle Light/Dark Mode">
+          <svg id="theme-icon-sun" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24" style="display:none">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+          <svg id="theme-icon-moon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ══ MAIN DASHBOARD WRAPPER ═══════════════════════ -->
+    <main class="dashboard-wrapper">
+
+      <!-- ── LEADERSHIP BANNER: GM & TL NAME ──────────── -->
+      <div class="leadership-banner" id="leadership-banner">
+        <!-- GM Box -->
+        <div class="leader-info-card gm-card">
+          <div class="leader-info-role">
+            <div class="leader-role-dot gm-dot"></div>
+            <span class="leader-role-label">General Manager</span>
+          </div>
+          <div class="leader-info-names" id="banner-gm-names">
+            <span class="leader-name-chip gm-chip placeholder">—</span>
+          </div>
+        </div>
+
+        <!-- TL Box -->
+        <div class="leader-info-card tl-card">
+          <div class="leader-info-role">
+            <div class="leader-role-dot tl-dot"></div>
+            <span class="leader-role-label">Team Lead(s)</span>
+          </div>
+          <div class="leader-info-names" id="banner-tl-names">
+            <span class="leader-name-chip tl-chip placeholder">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 3: FULL PAYMENT COHORT WISE ──────── -->
+      <section class="dashboard-section">
+        <div class="section-header teal-accent">
+          <div>
+            <h2 class="section-title">Full Payment Cohort Wise</h2>
+            <p class="section-subtitle">Prominent enrollment and revenue highlights for full payment cohorts</p>
+          </div>
+          <select id="select-sec-fc-cohort" class="chart-card-select"
+            onchange="onSectionCohortChange('fc', this.value)">
+            <option value="ALL">All Cohorts</option>
+            <option value="2024-A">2024-A</option>
+            <option value="2024-B">2024-B</option>
+            <option value="2025-A">2025-A</option>
+            <option value="2025-B">2025-B</option>
+            <option value="2026-A">2026-A</option>
+          </select>
+        </div>
+
+        <div class="kpi-cards-grid">
+          <!-- Enrollment Target -->
+          <div class="kpi-card accent-indigo">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Target</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-tgt">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Total enrollment target</span>
+            </div>
+          </div>
+
+          <!-- Enrollment Achieved -->
+          <div class="kpi-card accent-green">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Achieved</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-ach">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Students enrolled</span>
+              <span class="trend-badge" id="trend-fc-ach">—</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fc-ach" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Achivement % -->
+          <div class="kpi-card accent-teal">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Achivement %</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-pct">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Average conversion rate</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fc-pct" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Target -->
+          <div class="kpi-card accent-indigo">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Target</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-revtgt">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Aggregated revenue goals</span>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Achieved -->
+          <div class="kpi-card accent-purple">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Achieved</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-revach">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Revenue collected</span>
+              <span class="trend-badge" id="trend-fc-rev">—</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fc-rev" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Achivement % -->
+          <div class="kpi-card accent-amber">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Achivement %</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path
+                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fc-revpct">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Average revenue quota met</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fc-revpct" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 4: FULL PAYMENT MONTHLY WISE ─────── -->
+      <section class="dashboard-section">
+        <div class="section-header amber-accent">
+          <div>
+            <h2 class="section-title">Full Payment Monthly Wise</h2>
+            <p class="section-subtitle">Monthly aggregated figures for full payment conversion modules</p>
+          </div>
+          <select id="select-sec-fm-month" class="chart-card-select" onchange="onSectionMonthChange('fm', this.value)">
+            <option value="ALL">All Months</option>
+            <option value="Jan">January</option>
+            <option value="Feb">February</option>
+            <option value="Mar">March</option>
+            <option value="Apr">April</option>
+            <option value="May">May</option>
+            <option value="Jun">June</option>
+          </select>
+        </div>
+
+        <div class="kpi-cards-grid">
+          <!-- Enrollment Target -->
+          <div class="kpi-card accent-indigo">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Target</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-tgt">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Total enrollment target</span>
+            </div>
+          </div>
+
+          <!-- Enrollment Achieved -->
+          <div class="kpi-card accent-green">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Achieved</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-ach">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Students enrolled</span>
+              <span class="trend-badge" id="trend-fm-ach">—</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fm-ach" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Achivement % -->
+          <div class="kpi-card accent-teal">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Achivement %</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-pct">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Average conversion rate</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fm-pct" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Target -->
+          <div class="kpi-card accent-indigo">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Target</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-revtgt">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Aggregated revenue goals</span>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Achieved -->
+          <div class="kpi-card accent-purple">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Achieved</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-revach">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Revenue collected</span>
+              <span class="trend-badge" id="trend-fm-rev">—</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fm-rev" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enrollment Revenue Achivement % -->
+          <div class="kpi-card accent-amber">
+            <div class="card-header-row">
+              <span class="card-label">Enrollment Revenue Achivement %</span>
+              <div class="card-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path
+                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-value" id="card-fm-revpct">—</div>
+            <div class="card-footer">
+              <span class="card-subtext">Average revenue quota met</span>
+            </div>
+            <div class="card-progress-wrap">
+              <div class="card-progress-track">
+                <div class="card-progress-fill" id="prog-fm-revpct" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 5: TL WISE ANALYTICS ─────────────── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">TL Wise Analytics</h2>
+          <p class="section-subtitle">Performance breakdown at Team Lead level across token and full payment metrics</p>
+        </div>
+
+        <div class="leadership-grid">
+          <!-- 3. Full Payment Cohort TL Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Cohort TL Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-tl-fc-cohort" class="chart-card-select"
+                  onchange="onLeaderCohortFilterChange('tl-fc', this.value)">
+                  <option value="ALL">All Cohorts</option>
+                  <option value="2024-A">2024-A</option>
+                  <option value="2024-B">2024-B</option>
+                  <option value="2025-A">2025-A</option>
+                  <option value="2025-B">2025-B</option>
+                  <option value="2026-A">2026-A</option>
+                </select>
+                <select id="select-tl-fc" class="chart-card-select"
+                  onchange="onLeaderFilterChange('tl-fc', this.value)">
+                  <option value="ALL">All TLs</option>
+                </select>
+                <select id="sort-tl-fc" class="chart-card-select" onchange="onLeaderSortChange('tl-fc', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-tl-fc" class="leader-progress-list"></div>
+          </div>
+
+          <!-- 4. Full Payment Monthly TL Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Monthly TL Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-tl-fm-month" class="chart-card-select"
+                  onchange="onLeaderMonthFilterChange('tl-fm', this.value)">
+                  <option value="ALL">All Months</option>
+                  <option value="Jan">January</option>
+                  <option value="Feb">February</option>
+                  <option value="Mar">March</option>
+                  <option value="Apr">April</option>
+                  <option value="May">May</option>
+                  <option value="Jun">June</option>
+                </select>
+                <select id="select-tl-fm" class="chart-card-select"
+                  onchange="onLeaderFilterChange('tl-fm', this.value)">
+                  <option value="ALL">All TLs</option>
+                </select>
+                <select id="sort-tl-fm" class="chart-card-select" onchange="onLeaderSortChange('tl-fm', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-tl-fm" class="leader-progress-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 6: GM WISE ANALYTICS ─────────────── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">GM Wise Analytics</h2>
+          <p class="section-subtitle">Performance breakdown at General Manager level across token and full payment
+            metrics</p>
+        </div>
+
+        <div class="leadership-grid">
+          <!-- 3. Full Payment Cohort GM Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Cohort GM Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-gm-fc-cohort" class="chart-card-select"
+                  onchange="onLeaderCohortFilterChange('gm-fc', this.value)">
+                  <option value="ALL">All Cohorts</option>
+                  <option value="2024-A">2024-A</option>
+                  <option value="2024-B">2024-B</option>
+                  <option value="2025-A">2025-A</option>
+                  <option value="2025-B">2025-B</option>
+                  <option value="2026-A">2026-A</option>
+                </select>
+                <select id="select-gm-fc" class="chart-card-select"
+                  onchange="onLeaderFilterChange('gm-fc', this.value)">
+                  <option value="ALL">All GMs</option>
+                </select>
+                <select id="sort-gm-fc" class="chart-card-select" onchange="onLeaderSortChange('gm-fc', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-gm-fc" class="leader-progress-list"></div>
+          </div>
+
+          <!-- 4. Full Payment Monthly GM Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Monthly GM Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-gm-fm-month" class="chart-card-select"
+                  onchange="onLeaderMonthFilterChange('gm-fm', this.value)">
+                  <option value="ALL">All Months</option>
+                  <option value="Jan">January</option>
+                  <option value="Feb">February</option>
+                  <option value="Mar">March</option>
+                  <option value="Apr">April</option>
+                  <option value="May">May</option>
+                  <option value="Jun">June</option>
+                </select>
+                <select id="select-gm-fm" class="chart-card-select"
+                  onchange="onLeaderFilterChange('gm-fm', this.value)">
+                  <option value="ALL">All GMs</option>
+                </select>
+                <select id="sort-gm-fm" class="chart-card-select" onchange="onLeaderSortChange('gm-fm', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-gm-fm" class="leader-progress-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 7: BDA WISE ANALYTICS ────────────── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">BDA Wise Analytics</h2>
+          <p class="section-subtitle">Performance breakdown at Business Development Associate level across cohort and
+            monthly metrics</p>
+        </div>
+
+        <div class="leadership-grid">
+          <!-- Full Payment Cohort BDA Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Cohort BDA Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-bda-fc-cohort" class="chart-card-select"
+                  onchange="onLeaderCohortFilterChange('bda-fc', this.value)">
+                  <option value="ALL">All Cohorts</option>
+                  <option value="2024-A">2024-A</option>
+                  <option value="2024-B">2024-B</option>
+                  <option value="2025-A">2025-A</option>
+                  <option value="2025-B">2025-B</option>
+                  <option value="2026-A">2026-A</option>
+                </select>
+                <select id="select-bda-fc" class="chart-card-select"
+                  onchange="onLeaderFilterChange('bda-fc', this.value)">
+                  <option value="ALL">All BDAs</option>
+                </select>
+                <select id="sort-bda-fc" class="chart-card-select" onchange="onLeaderSortChange('bda-fc', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-bda-fc" class="leader-progress-list"></div>
+          </div>
+
+          <!-- Full Payment Monthly BDA Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Monthly BDA Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-bda-fm-month" class="chart-card-select"
+                  onchange="onLeaderMonthFilterChange('bda-fm', this.value)">
+                  <option value="ALL">All Months</option>
+                  <option value="Jan">January</option>
+                  <option value="Feb">February</option>
+                  <option value="Mar">March</option>
+                  <option value="Apr">April</option>
+                  <option value="May">May</option>
+                  <option value="Jun">June</option>
+                </select>
+                <select id="select-bda-fm" class="chart-card-select"
+                  onchange="onLeaderFilterChange('bda-fm', this.value)">
+                  <option value="ALL">All BDAs</option>
+                </select>
+                <select id="sort-bda-fm" class="chart-card-select" onchange="onLeaderSortChange('bda-fm', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-bda-fm" class="leader-progress-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- JavaScript Entrypoint -->
+  <script src="app.js"></script>
+</body>
+
+</html>
