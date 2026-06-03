@@ -858,6 +858,11 @@ html.dark .leader-slim-track {
   color: var(--purple);
 }
 
+/* Single leader chip spans full width (matches placeholder layout) */
+.leader-info-names .leader-name-chip:only-child {
+  grid-column: 1 / -1;
+}
+
 /* Empty / loading state — span both columns */
 .leader-name-chip.placeholder {
   color: var(--muted);
@@ -870,4 +875,9 @@ html.dark .leader-slim-track {
 
 .leader-name-chip.placeholder::before {
   content: none;
+}
+
+.leader-name-chip.placeholder.is-loading {
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }

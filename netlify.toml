@@ -9,7 +9,9 @@
   to = "/.netlify/functions/sheets"
   status = 200
 
+# SPA fallback — Netlify serves existing files (css/js) before this rule
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false

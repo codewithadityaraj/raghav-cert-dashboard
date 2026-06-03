@@ -12,9 +12,161 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Leadership banner — inlined so GM/TL chips always render correctly */
+    .leadership-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .leadership-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .leader-info-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 1px 3px -1px rgba(15, 23, 42, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gm-card {
+      border-left: 3px solid #4f46e5;
+    }
+
+    .tl-card {
+      border-left: 3px solid #7c3aed;
+    }
+
+    .leader-info-role {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .leader-role-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .gm-dot {
+      background: #4f46e5;
+      box-shadow: 0 0 8px rgba(79, 70, 229, 0.5);
+    }
+
+    .tl-dot {
+      background: #7c3aed;
+      box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+    }
+
+    .leader-role-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .leader-info-names {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+    }
+
+    .leader-name-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      padding: 7px 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      min-width: 0;
+    }
+
+    .leader-name-chip::before {
+      content: attr(data-initials);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .leader-name-chip span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .gm-chip::before {
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+
+    .tl-chip::before {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+
+    .leader-info-names .leader-name-chip:only-child,
+    .leader-name-chip.placeholder {
+      grid-column: 1 / -1;
+    }
+
+    .leader-name-chip.placeholder {
+      color: #64748b;
+      font-weight: 500;
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .leader-name-chip.placeholder::before {
+      content: none;
+    }
+
+    html.dark .leader-info-card {
+      background: #111827;
+      border-color: #1f293d;
+    }
+
+    html.dark .leader-name-chip {
+      background: #090d16;
+      border-color: #1f293d;
+      color: #f8fafc;
+    }
+
+    html.dark .gm-chip::before {
+      background: #1e1b4b;
+      color: #818cf8;
+    }
+
+    html.dark .tl-chip::before {
+      background: #2e1065;
+      color: #a78bfa;
+    }
+  </style>
 </head>
-f
 
 <body>
 
@@ -89,7 +241,7 @@ f
             <span class="leader-role-label">General Manager</span>
           </div>
           <div class="leader-info-names" id="banner-gm-names">
-            <span class="leader-name-chip gm-chip placeholder">—</span>
+            <span class="leader-name-chip placeholder gm-chip is-loading"><span>Loading…</span></span>
           </div>
         </div>
 
@@ -100,7 +252,7 @@ f
             <span class="leader-role-label">Team Lead(s)</span>
           </div>
           <div class="leader-info-names" id="banner-tl-names">
-            <span class="leader-name-chip tl-chip placeholder">—</span>
+            <span class="leader-name-chip placeholder tl-chip is-loading"><span>Loading…</span></span>
           </div>
         </div>
       </div>
@@ -639,7 +791,7 @@ f
   </div>
 
   <!-- JavaScript Entrypoint -->
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 
 </html>
