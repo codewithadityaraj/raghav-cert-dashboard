@@ -141,9 +141,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
   box-shadow: var(--shadow-sm);
   transition: background 0.3s, border-color 0.3s;
+  /* Prevent any child from pushing the header wider than viewport */
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 html.dark .sticky-header {
@@ -154,6 +158,10 @@ html.dark .sticky-header {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* Allow left side to shrink when header is narrow */
+  min-width: 0;
+  flex: 1 1 0;
+  overflow: hidden;
 }
 
 .header-title-wrap {
@@ -177,6 +185,11 @@ html.dark .sticky-header {
   background: linear-gradient(135deg, var(--text) 50%, var(--muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* Prevent title from overflowing on small screens */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .header-meta {
@@ -188,7 +201,9 @@ html.dark .sticky-header {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  /* Prevent right side from growing past its content */
+  flex-shrink: 0;
 }
 
 /* Global Select Filter */
@@ -223,6 +238,12 @@ html.dark .sticky-header {
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 14px;
+  /* Constrain width so long option names don't blow out the header */
+  max-width: 220px;
+  min-width: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .program-select:hover, .program-select:focus {
@@ -684,14 +705,52 @@ html.dark .leader-slim-track {
 /* ── OTHER UI POLISH ────────────────────────────── */
 @media (max-width: 640px) {
   .sticky-header {
-    padding: 12px 16px;
+    padding: 10px 14px;
+    gap: 8px;
   }
   .header-title {
-    font-size: 16px;
+    font-size: 13px;
+    letter-spacing: -0.3px;
+  }
+  .header-meta {
+    display: none; /* hide "Last updated" on mobile to save space */
+  }
+  .header-logo-dot {
+    width: 9px;
+    height: 9px;
+  }
+  /* Hide the "PROGRAM" text label on mobile — icon + select is enough */
+  .global-select-label {
+    display: none;
+  }
+  .program-select {
+    max-width: 140px;
+    font-size: 11px;
+    height: 34px;
+    padding: 0 26px 0 10px;
+    background-size: 11px;
+    background-position: right 8px center;
+  }
+  .action-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .header-right {
+    gap: 6px;
   }
   .dashboard-wrapper {
-    padding: 16px 12px;
-    gap: 28px;
+    padding: 14px 12px;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .program-select {
+    max-width: 110px;
+    font-size: 10px;
+  }
+  .header-title {
+    font-size: 12px;
   }
 }
 

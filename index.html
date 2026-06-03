@@ -165,6 +165,336 @@
       background: #2e1065;
       color: #a78bfa;
     }
+
+    /* ── OVERVIEW PANEL ────────────────────────────── */
+    .overview-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: var(--transition);
+      animation: fadeInUp 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+
+    .overview-panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 24px 16px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .overview-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .overview-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .overview-title-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    .overview-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .overview-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .overview-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .overview-select-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .overview-select {
+      height: 34px;
+      padding: 0 28px 0 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      transition: var(--transition-fast);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2364748b' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 10px;
+      min-width: 120px;
+    }
+
+    .overview-select:hover,
+    .overview-select:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .overview-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .overview-program-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 110px;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s ease;
+    }
+
+    .overview-program-row:first-child {
+      padding-top: 4px;
+    }
+
+    .overview-program-row:last-child {
+      border-bottom: none;
+      padding-bottom: 4px;
+    }
+
+    .overview-program-row:hover {
+      background: var(--surface-hover);
+      margin: 0 -12px;
+      padding-left: 12px;
+      padding-right: 12px;
+      border-radius: 8px;
+    }
+
+    .overview-prog-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .overview-prog-name-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .overview-prog-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .overview-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .overview-bar-track {
+      height: 10px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    html.dark .overview-bar-track {
+      background: #1f293d;
+    }
+
+    .overview-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .overview-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 30%;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 0 99px 99px 0;
+    }
+
+    .overview-bar-pct {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .overview-target-wrap {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: flex-end;
+    }
+
+    .overview-target-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .overview-target-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .overview-achieved-val {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .overview-empty {
+      text-align: center;
+      padding: 36px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Color palette for progress bars */
+    .ov-color-0 {
+      background: linear-gradient(90deg, #4f46e5, #818cf8);
+    }
+
+    .ov-color-1 {
+      background: linear-gradient(90deg, #0d9488, #2dd4bf);
+    }
+
+    .ov-color-2 {
+      background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    }
+
+    .ov-color-3 {
+      background: linear-gradient(90deg, #ea580c, #fb923c);
+    }
+
+    .ov-color-4 {
+      background: linear-gradient(90deg, #0891b2, #38bdf8);
+    }
+
+    .ov-color-5 {
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+    }
+
+    .ov-color-6 {
+      background: linear-gradient(90deg, #be185d, #f472b6);
+    }
+
+    .ov-color-7 {
+      background: linear-gradient(90deg, #b45309, #fcd34d);
+    }
+
+    .ov-dot-0 {
+      background: #4f46e5;
+    }
+
+    .ov-dot-1 {
+      background: #0d9488;
+    }
+
+    .ov-dot-2 {
+      background: #7c3aed;
+    }
+
+    .ov-dot-3 {
+      background: #ea580c;
+    }
+
+    .ov-dot-4 {
+      background: #0891b2;
+    }
+
+    .ov-dot-5 {
+      background: #16a34a;
+    }
+
+    .ov-dot-6 {
+      background: #be185d;
+    }
+
+    .ov-dot-7 {
+      background: #b45309;
+    }
+
+    @media (max-width: 768px) {
+      .overview-program-row {
+        grid-template-columns: 140px 1fr 90px;
+        gap: 10px;
+      }
+
+      .overview-controls {
+        gap: 6px;
+      }
+
+      .overview-select {
+        min-width: 90px;
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .overview-program-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .overview-target-wrap {
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 
@@ -231,6 +561,59 @@
 
     <!-- ══ MAIN DASHBOARD WRAPPER ═══════════════════════ -->
     <main class="dashboard-wrapper">
+
+      <!-- ── OVERVIEW PANEL ──────────────────────────── -->
+      <section class="overview-panel" id="overview-panel">
+        <div class="overview-panel-head">
+          <div class="overview-title-wrap">
+            <div class="overview-title">
+              <div class="overview-title-icon">
+                <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+              </div>
+              Programs Overview
+            </div>
+            <span class="overview-subtitle">Enrollment achievement across all programs</span>
+          </div>
+
+          <!-- Dropdowns top-right -->
+          <div class="overview-controls">
+            <!-- 1. Full Payment type -->
+            <div class="overview-select-group">
+              <span class="overview-select-label">Full Payment</span>
+              <select id="ov-fp-type" class="overview-select" onchange="onOverviewChange()">
+                <option value="cohort">Cohort Wise</option>
+                <option value="monthly">Monthly Wise</option>
+              </select>
+            </div>
+
+            <!-- 2. Cohort -->
+            <div class="overview-select-group" id="ov-cohort-group">
+              <span class="overview-select-label">Cohort</span>
+              <select id="ov-cohort" class="overview-select" onchange="onOverviewChange()">
+                <option value="ALL">All Cohorts</option>
+              </select>
+            </div>
+
+            <!-- 3. Month -->
+            <div class="overview-select-group" id="ov-month-group" style="display:none">
+              <span class="overview-select-label">Month</span>
+              <select id="ov-month" class="overview-select" onchange="onOverviewChange()">
+                <option value="ALL">All Months</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Program rows -->
+        <div class="overview-body" id="overview-body">
+          <div class="overview-empty">Loading…</div>
+        </div>
+      </section>
 
       <!-- ── LEADERSHIP BANNER: GM & TL NAME ──────────── -->
       <div class="leadership-banner" id="leadership-banner">
@@ -553,83 +936,6 @@
         </div>
       </section>
 
-      <!-- ── SECTION 5: TL WISE ANALYTICS ─────────────── -->
-      <section class="dashboard-section">
-        <div class="section-header">
-          <h2 class="section-title">TL Wise Analytics</h2>
-          <p class="section-subtitle">Performance breakdown at Team Lead level across token and full payment metrics</p>
-        </div>
-
-        <div class="leadership-grid">
-          <!-- 3. Full Payment Cohort TL Wise -->
-          <div class="chart-card-block">
-            <div class="chart-card-header">
-              <h3 class="chart-card-title">Full Payment Cohort TL Wise</h3>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <select id="select-tl-fc-cohort" class="chart-card-select"
-                  onchange="onLeaderCohortFilterChange('tl-fc', this.value)">
-                  <option value="ALL">All Cohorts</option>
-                  <option value="2024-A">2024-A</option>
-                  <option value="2024-B">2024-B</option>
-                  <option value="2025-A">2025-A</option>
-                  <option value="2025-B">2025-B</option>
-                  <option value="2026-A">2026-A</option>
-                </select>
-                <select id="select-tl-fc" class="chart-card-select"
-                  onchange="onLeaderFilterChange('tl-fc', this.value)">
-                  <option value="ALL">All TLs</option>
-                </select>
-                <select id="sort-tl-fc" class="chart-card-select" onchange="onLeaderSortChange('tl-fc', this.value)">
-                  <option value="ach-desc">Sort: High &rarr; Low</option>
-                  <option value="ach-asc">Sort: Low &rarr; High</option>
-                  <option value="name-asc">Sort: Name A-Z</option>
-                </select>
-              </div>
-            </div>
-            <div class="leader-list-header">
-              <span class="leader-list-header-name">Name</span>
-              <span class="leader-list-header-bar">Progress</span>
-              <span class="leader-list-header-val">Achievement</span>
-            </div>
-            <div id="list-tl-fc" class="leader-progress-list"></div>
-          </div>
-
-          <!-- 4. Full Payment Monthly TL Wise -->
-          <div class="chart-card-block">
-            <div class="chart-card-header">
-              <h3 class="chart-card-title">Full Payment Monthly TL Wise</h3>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <select id="select-tl-fm-month" class="chart-card-select"
-                  onchange="onLeaderMonthFilterChange('tl-fm', this.value)">
-                  <option value="ALL">All Months</option>
-                  <option value="Jan">January</option>
-                  <option value="Feb">February</option>
-                  <option value="Mar">March</option>
-                  <option value="Apr">April</option>
-                  <option value="May">May</option>
-                  <option value="Jun">June</option>
-                </select>
-                <select id="select-tl-fm" class="chart-card-select"
-                  onchange="onLeaderFilterChange('tl-fm', this.value)">
-                  <option value="ALL">All TLs</option>
-                </select>
-                <select id="sort-tl-fm" class="chart-card-select" onchange="onLeaderSortChange('tl-fm', this.value)">
-                  <option value="ach-desc">Sort: High &rarr; Low</option>
-                  <option value="ach-asc">Sort: Low &rarr; High</option>
-                  <option value="name-asc">Sort: Name A-Z</option>
-                </select>
-              </div>
-            </div>
-            <div class="leader-list-header">
-              <span class="leader-list-header-name">Name</span>
-              <span class="leader-list-header-bar">Progress</span>
-              <span class="leader-list-header-val">Achievement</span>
-            </div>
-            <div id="list-tl-fm" class="leader-progress-list"></div>
-          </div>
-        </div>
-      </section>
-
       <!-- ── SECTION 6: GM WISE ANALYTICS ─────────────── -->
       <section class="dashboard-section">
         <div class="section-header">
@@ -704,6 +1010,83 @@
               <span class="leader-list-header-val">Achievement</span>
             </div>
             <div id="list-gm-fm" class="leader-progress-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SECTION 5: TL WISE ANALYTICS ─────────────── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">TL Wise Analytics</h2>
+          <p class="section-subtitle">Performance breakdown at Team Lead level across token and full payment metrics</p>
+        </div>
+
+        <div class="leadership-grid">
+          <!-- 3. Full Payment Cohort TL Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Cohort TL Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-tl-fc-cohort" class="chart-card-select"
+                  onchange="onLeaderCohortFilterChange('tl-fc', this.value)">
+                  <option value="ALL">All Cohorts</option>
+                  <option value="2024-A">2024-A</option>
+                  <option value="2024-B">2024-B</option>
+                  <option value="2025-A">2025-A</option>
+                  <option value="2025-B">2025-B</option>
+                  <option value="2026-A">2026-A</option>
+                </select>
+                <select id="select-tl-fc" class="chart-card-select"
+                  onchange="onLeaderFilterChange('tl-fc', this.value)">
+                  <option value="ALL">All TLs</option>
+                </select>
+                <select id="sort-tl-fc" class="chart-card-select" onchange="onLeaderSortChange('tl-fc', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-tl-fc" class="leader-progress-list"></div>
+          </div>
+
+          <!-- 4. Full Payment Monthly TL Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Monthly TL Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-tl-fm-month" class="chart-card-select"
+                  onchange="onLeaderMonthFilterChange('tl-fm', this.value)">
+                  <option value="ALL">All Months</option>
+                  <option value="Jan">January</option>
+                  <option value="Feb">February</option>
+                  <option value="Mar">March</option>
+                  <option value="Apr">April</option>
+                  <option value="May">May</option>
+                  <option value="Jun">June</option>
+                </select>
+                <select id="select-tl-fm" class="chart-card-select"
+                  onchange="onLeaderFilterChange('tl-fm', this.value)">
+                  <option value="ALL">All TLs</option>
+                </select>
+                <select id="sort-tl-fm" class="chart-card-select" onchange="onLeaderSortChange('tl-fm', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-tl-fm" class="leader-progress-list"></div>
           </div>
         </div>
       </section>

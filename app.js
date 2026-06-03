@@ -234,25 +234,36 @@ function renderTableRows(containerId, rows, config) {
     return;
   }
 
+  // achievementOnly mode: just show name + achieved number, no bar or target
+  if (config.achievementOnly) {
+    container.innerHTML = rows.map((row, idx) => {
+      const name     = safeString(firstDefined(row, config.name)) || 'NA';
+      const achieved = toNumber(firstDefined(row, config.achieved));
+      const stripeBg = idx % 2 ? 'rgba(127,127,127,0.03)' : 'transparent';
+      return '<div class="leader-progress-row" style="background:' + stripeBg + ';border-radius:8px;padding:10px 14px;' +
+        'display:flex;align-items:center;justify-content:space-between;transition:background 200ms ease;">' +
+        '<span class="leader-row-name" style="flex:1;min-width:0;">' + escapeHtml(name) + '</span>' +
+        '<span style="font-size:14px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;flex-shrink:0;">' +
+        fmt(achieved) + '</span>' +
+        '</div>';
+    }).join('');
+    return;
+  }
+
+  // Full mode: name + progress bar + achieved/target (%)
   container.innerHTML = rows.map((row, idx) => {
-    const name = safeString(firstDefined(row, config.name)) || 'NA';
-    const target = toNumber(firstDefined(row, config.target));
+    const name     = safeString(firstDefined(row, config.name)) || 'NA';
+    const target   = toNumber(firstDefined(row, config.target));
     const achieved = toNumber(firstDefined(row, config.achieved));
     const progress = toPercent(firstDefined(row, config.progress)) || (target ? (achieved / target) * 100 : 0);
     const stripeBg = idx % 2 ? 'rgba(127,127,127,0.03)' : 'transparent';
-    return `
-      <div class="leader-progress-row" style="background:${stripeBg};border-radius:8px;padding:8px;transition:background 200ms ease;">
-        <div class="leader-row-name-wrap">
-          <span class="leader-row-name" title="${name}">${name}</span>
-        </div>
-        <div class="leader-row-bar-container">
-          <div class="leader-slim-track">
-            <div class="leader-slim-fill ${config.colorClass}" style="width:${clamp(progress, 0, 100)}%;transition:width 350ms ease;"></div>
-          </div>
-        </div>
-        <div class="leader-row-values">${fmt(achieved)}/${fmt(target)} (${progress.toFixed(1)}%)</div>
-      </div>
-    `;
+    return '<div class="leader-progress-row" style="background:' + stripeBg + ';border-radius:8px;padding:8px;transition:background 200ms ease;">' +
+      '<div class="leader-row-name-wrap"><span class="leader-row-name" title="' + escapeHtml(name) + '">' + escapeHtml(name) + '</span></div>' +
+      '<div class="leader-row-bar-container"><div class="leader-slim-track">' +
+      '<div class="leader-slim-fill ' + config.colorClass + '" style="width:' + clamp(progress, 0, 100) + '%;transition:width 350ms ease;"></div>' +
+      '</div></div>' +
+      '<div class="leader-row-values">' + fmt(achieved) + '/' + fmt(target) + ' (' + progress.toFixed(1) + '%)</div>' +
+      '</div>';
   }).join('');
 }
 
@@ -266,7 +277,8 @@ const LEADER_TABLE_CONFIG = {
       target: 'Cohort TL Full Payment Target',
       achieved: 'Cohort TL Full Payment Achieved',
       progress: 'Cohort TL Full Payment Achievement %',
-      colorClass: 'color-fp-cohort'
+      colorClass: 'color-fp-cohort',
+      achievementOnly: true
     }
   },
   'tl-fm': {
@@ -278,7 +290,8 @@ const LEADER_TABLE_CONFIG = {
       target: 'Month TL Full Payment Target',
       achieved: 'Month TL Full Payment Achieved',
       progress: 'Month TL Full Payment Achievement %',
-      colorClass: 'color-fp-monthly'
+      colorClass: 'color-fp-monthly',
+      achievementOnly: true
     }
   },
   'gm-fc': {
@@ -314,7 +327,8 @@ const LEADER_TABLE_CONFIG = {
       target: 'BDA Cohort Full Payment Target',
       achieved: 'BDA Cohort Full Payment Achieved',
       progress: 'BDA Cohort Full Payment Achievement %',
-      colorClass: 'color-fp-cohort'
+      colorClass: 'color-fp-cohort',
+      achievementOnly: true
     }
   },
   'bda-fm': {
@@ -326,7 +340,8 @@ const LEADER_TABLE_CONFIG = {
       target: 'BDA Month Full Payment Target',
       achieved: 'BDA Month Full Payment Achieved',
       progress: 'BDA Month Full Payment Achievement %',
-      colorClass: 'color-fp-monthly'
+      colorClass: 'color-fp-monthly',
+      achievementOnly: true
     }
   }
 };
@@ -351,7 +366,22 @@ function renderProgressTable(chartKey) {
     return toNumber(firstDefined(b, achKey)) - toNumber(firstDefined(a, achKey));
   });
 
-  renderTableRows(`list-${chartKey}`, withLeader, config);
+  // Hide the "Progress" header column for achievementOnly sections
+  const listEl   = document.getElementById('list-' + chartKey);
+  const headerEl = listEl && listEl.previousElementSibling;
+  if (headerEl && headerEl.classList.contains('leader-list-header')) {
+    const barHeader = headerEl.querySelector('.leader-list-header-bar');
+    const valHeader = headerEl.querySelector('.leader-list-header-val');
+    if (config.achievementOnly) {
+      if (barHeader) barHeader.style.display = 'none';
+      if (valHeader) valHeader.textContent = 'Achievement';
+    } else {
+      if (barHeader) barHeader.style.display = '';
+      if (valHeader) valHeader.textContent = 'Achievement';
+    }
+  }
+
+  renderTableRows('list-' + chartKey, withLeader, config);
 }
 
 function renderCards(prefix) {
@@ -550,6 +580,8 @@ function updateDashboard() {
   renderLeadershipList('bda-fc');
   renderLeadershipList('bda-fm');
   renderLeadershipBanner();
+  syncOverviewDropdowns();
+  renderOverviewPanel();
 }
 
 async function initializeDashboard() {
@@ -668,6 +700,99 @@ async function handleRefresh() {
   } finally {
     if (btn) btn.classList.remove('spinning');
   }
+}
+
+/* ── OVERVIEW PANEL ──────────────────────────────── */
+
+const OV_COLORS = 8; // must match ov-color-N / ov-dot-N count in CSS
+
+function syncOverviewDropdowns() {
+  const mode = document.getElementById('ov-fp-type')?.value || 'cohort';
+  const isCohort = mode === 'cohort';
+
+  const cohortGroup = document.getElementById('ov-cohort-group');
+  const monthGroup  = document.getElementById('ov-month-group');
+  if (cohortGroup) cohortGroup.style.display = isCohort ? '' : 'none';
+  if (monthGroup)  monthGroup.style.display  = isCohort ? 'none' : '';
+
+  if (isCohort) {
+    const rows = datasets.fullPaymentCohort;
+    populateDropdown('ov-cohort', uniqueValues(rows, 'Cohort Name'), 'All Cohorts');
+  } else {
+    const rows = datasets.fullPaymentMonthly;
+    populateDropdown('ov-month', uniqueValues(rows, 'Month'), 'All Months');
+  }
+}
+
+function renderOverviewPanel() {
+  const body = document.getElementById('overview-body');
+  if (!body) return;
+
+  const mode     = document.getElementById('ov-fp-type')?.value || 'cohort';
+  const isCohort = mode === 'cohort';
+
+  // Source dataset + filter selection
+  let sourceRows;
+  if (isCohort) {
+    const cohort = document.getElementById('ov-cohort')?.value || 'ALL';
+    sourceRows = filterData(datasets.fullPaymentCohort, { 'Cohort Name': cohort });
+  } else {
+    const month = document.getElementById('ov-month')?.value || 'ALL';
+    sourceRows = filterData(datasets.fullPaymentMonthly, { Month: month });
+  }
+
+  // Column names depend on mode
+  const targetCol   = isCohort ? 'Cohort Enrollment Target'    : 'Month Enrollment Target';
+  const achievedCol = isCohort ? 'Cohort Enrollment Acheived'  : 'Month Enrollment Acheived';
+  const pctCol      = isCohort ? 'Cohort Enrollment Acheivement %' : 'Month Enrollment Acheivement %';
+
+  // Collect all unique programs present in the dataset
+  const programs = uniqueValues(sourceRows, 'Program Name').sort((a, b) => a.localeCompare(b));
+
+  if (!programs.length) {
+    body.innerHTML = '<div class="overview-empty">No data available for the selected filters.</div>';
+    return;
+  }
+
+  const rows = programs.map((prog, idx) => {
+    const progRows = filterData(sourceRows, { 'Program Name': prog });
+    const target   = progRows.reduce((s, r) => s + toNumber(firstDefined(r, targetCol)),   0);
+    const achieved = progRows.reduce((s, r) => s + toNumber(firstDefined(r, achievedCol)), 0);
+    // Try reading pct directly; fall back to computed
+    const pctRaw   = toPercent(firstDefined(progRows[0] || {}, pctCol));
+    const pct      = pctRaw > 0 ? pctRaw : (target > 0 ? (achieved / target) * 100 : 0);
+    const pctClamped = clamp(pct, 0, 100);
+    const colorIdx = idx % OV_COLORS;
+
+    return `
+      <div class="overview-program-row">
+        <div class="overview-prog-name">
+          <span class="overview-prog-name-badge">
+            <span class="overview-prog-dot ov-dot-${colorIdx}"></span>
+            ${escapeHtml(prog)}
+          </span>
+        </div>
+        <div class="overview-bar-wrap">
+          <div class="overview-bar-track">
+            <div class="overview-bar-fill ov-color-${colorIdx}" style="width:${pctClamped.toFixed(1)}%"></div>
+          </div>
+          <span class="overview-bar-pct">${pct.toFixed(1)}% achieved</span>
+        </div>
+        <div class="overview-target-wrap">
+          <span class="overview-target-label">Target</span>
+          <span class="overview-target-val">${fmt(target)}</span>
+          <span class="overview-achieved-val">${fmt(achieved)} done</span>
+        </div>
+      </div>
+    `;
+  });
+
+  body.innerHTML = rows.join('');
+}
+
+function onOverviewChange() {
+  syncOverviewDropdowns();
+  renderOverviewPanel();
 }
 
 function init() {
