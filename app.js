@@ -117,10 +117,12 @@ function parseCSV(text) {
   }).filter((row) => Object.values(row).some((val) => safeString(val)));
 }
 
-async function fetchCSV(sheetKey) {
-  if (csvCache.has(sheetKey)) return csvCache.get(sheetKey);
+async function fetchCSV(sheetKey, forceRefresh = false) {
+  if (!forceRefresh && csvCache.has(sheetKey)) return csvCache.get(sheetKey);
   const promise = (async () => {
-    const functionUrl = `/api/sheets?sheet=${encodeURIComponent(sheetKey)}`;
+    const params = new URLSearchParams({ sheet: sheetKey });
+    if (forceRefresh) params.set('refresh', '1');
+    const functionUrl = `/api/sheets?${params.toString()}`;
     const response = await fetch(functionUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Function fetch failed: ${response.status}`);
     const payload = await response.json();
@@ -224,6 +226,33 @@ function aggregateCardRows(rows, map) {
     revAchieved: acc.revAchieved,
     revPercent: toPercent(firstDefined(first, map.revPercent))
   };
+}
+
+function aggregateLeaderRows(rows, config) {
+  const nameKeys = Array.isArray(config.name) ? config.name : [config.name];
+  const targetKey = config.target;
+  const achievedKey = config.achieved;
+  const progressKey = config.progress;
+  const buckets = new Map();
+
+  rows.forEach((row) => {
+    const name = safeString(firstDefined(row, nameKeys));
+    if (!name) return;
+
+    const current = buckets.get(name) || { name, target: 0, achieved: 0 };
+    current.target += toNumber(firstDefined(row, targetKey));
+    current.achieved += toNumber(firstDefined(row, achievedKey));
+    buckets.set(name, current);
+  });
+
+  return Array.from(buckets.values()).map(({ name, target, achieved }) => {
+    const aggregated = {};
+    nameKeys.forEach((key) => { aggregated[key] = name; });
+    aggregated[targetKey] = target;
+    aggregated[achievedKey] = achieved;
+    aggregated[progressKey] = target > 0 ? (achieved / target) * 100 : 0;
+    return aggregated;
+  });
 }
 
 function renderTableRows(containerId, rows, config) {
@@ -357,10 +386,11 @@ function renderProgressTable(chartKey) {
     ? filterData(base, { 'Cohort Name': state.leaderCohortFilters[chartKey] })
     : filterData(base, { Month: state.leaderMonthFilters[chartKey] });
   const withLeader = filterData(withPeriod, role, state.leaderFilters[chartKey]);
+  const aggregated = aggregateLeaderRows(withLeader, config);
 
   const sortVal = state.leaderSorts[chartKey];
   const achKey = config.achieved;
-  withLeader.sort((a, b) => {
+  aggregated.sort((a, b) => {
     if (sortVal === 'name-asc') return safeString(firstDefined(a, role)).localeCompare(safeString(firstDefined(b, role)));
     if (sortVal === 'ach-asc') return toNumber(firstDefined(a, achKey)) - toNumber(firstDefined(b, achKey));
     return toNumber(firstDefined(b, achKey)) - toNumber(firstDefined(a, achKey));
@@ -381,7 +411,7 @@ function renderProgressTable(chartKey) {
     }
   }
 
-  renderTableRows('list-' + chartKey, withLeader, config);
+  renderTableRows('list-' + chartKey, aggregated, config);
 }
 
 function renderCards(prefix) {
@@ -584,20 +614,20 @@ function updateDashboard() {
   renderOverviewPanel();
 }
 
-async function initializeDashboard() {
+async function initializeDashboard(forceRefresh = false) {
   state.isLoading = true;
   state.hasError = false;
   setLoadingView();
   try {
     const settled = await Promise.allSettled([
-      fetchCSV(DATA_SOURCES.fullPaymentCohort),
-      fetchCSV(DATA_SOURCES.fullPaymentMonthly),
-      fetchCSV(DATA_SOURCES.tlCohort),
-      fetchCSV(DATA_SOURCES.tlMonthly),
-      fetchCSV(DATA_SOURCES.gmCohort),
-      fetchCSV(DATA_SOURCES.gmMonthly),
-      fetchCSV(DATA_SOURCES.bdaCohort),
-      fetchCSV(DATA_SOURCES.bdaMonthly)
+      fetchCSV(DATA_SOURCES.fullPaymentCohort, forceRefresh),
+      fetchCSV(DATA_SOURCES.fullPaymentMonthly, forceRefresh),
+      fetchCSV(DATA_SOURCES.tlCohort, forceRefresh),
+      fetchCSV(DATA_SOURCES.tlMonthly, forceRefresh),
+      fetchCSV(DATA_SOURCES.gmCohort, forceRefresh),
+      fetchCSV(DATA_SOURCES.gmMonthly, forceRefresh),
+      fetchCSV(DATA_SOURCES.bdaCohort, forceRefresh),
+      fetchCSV(DATA_SOURCES.bdaMonthly, forceRefresh)
     ]);
     const keys = [
       'fullPaymentCohort', 'fullPaymentMonthly', 'tlCohort', 'tlMonthly',
@@ -696,7 +726,7 @@ async function handleRefresh() {
   if (btn) btn.classList.add('spinning');
   csvCache.clear();
   try {
-    await initializeDashboard();
+    await initializeDashboard(true);
   } finally {
     if (btn) btn.classList.remove('spinning');
   }

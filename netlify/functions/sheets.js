@@ -39,8 +39,13 @@ function resolveSheetName(workbook, candidates) {
   return null;
 }
 
-async function loadWorkbook() {
+async function loadWorkbook(forceRefresh = false) {
   const now = Date.now();
+  if (forceRefresh) {
+    workbookCache = null;
+    workbookCacheAt = 0;
+    sheetCsvCache.clear();
+  }
   if (workbookCache && now - workbookCacheAt < CACHE_MS) return workbookCache;
 
   const response = await fetch(WORKBOOK_URL, {
@@ -86,16 +91,24 @@ exports.handler = async (event) => {
       };
     }
 
-    if (sheetCsvCache.has(sheetKey)) {
+    const forceRefresh = event.queryStringParameters?.refresh === '1';
+
+    if (!forceRefresh && sheetCsvCache.has(sheetKey)) {
       const cached = sheetCsvCache.get(sheetKey);
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ sheet: sheetKey, tab: cached.tab, csv: cached.csv })
+        body: JSON.stringify({ sheet: sheetKey, tab: cached.tab, csv: cached.csv, refreshed: false })
       };
     }
 
-    const workbook = await loadWorkbook();
+    if (forceRefresh) {
+      workbookCache = null;
+      workbookCacheAt = 0;
+      sheetCsvCache.clear();
+    }
+
+    const workbook = await loadWorkbook(forceRefresh);
     const tabName = resolveSheetName(workbook, candidates);
     if (!tabName) {
       return {
@@ -110,7 +123,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ sheet: sheetKey, tab: tabName, csv })
+      body: JSON.stringify({ sheet: sheetKey, tab: tabName, csv, refreshed: forceRefresh })
     };
   } catch (error) {
     return {
