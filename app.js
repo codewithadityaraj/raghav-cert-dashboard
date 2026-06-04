@@ -764,12 +764,25 @@ function renderOverviewPanel() {
     const pctClamped = clamp(pct, 0, 100);
     const colorIdx = idx % OV_COLORS;
 
+    // Collect TL names for this program
+    const tlProgRows = filterData(datasets.tlCohort, { 'Program Name': prog });
+    const tlNames = collectUniqueLeaderNames(tlProgRows, ['TL Name', 'TL NAME']);
+    const tlChipsHtml = tlNames.length
+      ? tlNames.map((name) => {
+          const initials = getInitials(name);
+          return `<span class="ov-tl-chip" data-initials="${escapeHtml(initials)}" title="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></span>`;
+        }).join('')
+      : '';
+
     return `
       <div class="overview-program-row">
         <div class="overview-prog-name">
           <span class="overview-prog-name-badge">
             <span class="overview-prog-dot ov-dot-${colorIdx}"></span>
-            ${escapeHtml(prog)}
+            <span class="overview-prog-name-wrap">
+              ${escapeHtml(prog)}
+              ${tlChipsHtml ? `<span class="ov-tl-chips-row">${tlChipsHtml}</span>` : ''}
+            </span>
           </span>
         </div>
         <div class="overview-bar-wrap">

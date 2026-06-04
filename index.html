@@ -496,6 +496,69 @@
         align-items: flex-start;
       }
     }
+
+    /* ── OVERVIEW PROGRAM NAME WRAP + TL CHIPS ───────── */
+    .overview-prog-name-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .ov-tl-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .ov-tl-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #7c3aed;
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 6px;
+      padding: 2px 7px 2px 4px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ov-tl-chip::before {
+      content: attr(data-initials);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 8px;
+      font-weight: 800;
+      background: #ede9fe;
+      color: #7c3aed;
+      flex-shrink: 0;
+    }
+
+    .ov-tl-chip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    html.dark .ov-tl-chip {
+      background: #2e1065;
+      border-color: #4c1d95;
+      color: #c4b5fd;
+    }
+
+    html.dark .ov-tl-chip::before {
+      background: #4c1d95;
+      color: #ddd6fe;
+    }
   </style>
 </head>
 
