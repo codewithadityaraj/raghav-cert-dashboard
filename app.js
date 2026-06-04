@@ -266,7 +266,7 @@ function renderTableRows(containerId, rows, config) {
   // achievementOnly mode: just show name + achieved number, no bar or target
   if (config.achievementOnly) {
     container.innerHTML = rows.map((row, idx) => {
-      const name     = safeString(firstDefined(row, config.name)) || 'NA';
+      const name = safeString(firstDefined(row, config.name)) || 'NA';
       const achieved = toNumber(firstDefined(row, config.achieved));
       const stripeBg = idx % 2 ? 'rgba(127,127,127,0.03)' : 'transparent';
       return '<div class="leader-progress-row" style="background:' + stripeBg + ';border-radius:8px;padding:10px 14px;' +
@@ -281,8 +281,8 @@ function renderTableRows(containerId, rows, config) {
 
   // Full mode: name + progress bar + achieved/target (%)
   container.innerHTML = rows.map((row, idx) => {
-    const name     = safeString(firstDefined(row, config.name)) || 'NA';
-    const target   = toNumber(firstDefined(row, config.target));
+    const name = safeString(firstDefined(row, config.name)) || 'NA';
+    const target = toNumber(firstDefined(row, config.target));
     const achieved = toNumber(firstDefined(row, config.achieved));
     const progress = toPercent(firstDefined(row, config.progress)) || (target ? (achieved / target) * 100 : 0);
     const stripeBg = idx % 2 ? 'rgba(127,127,127,0.03)' : 'transparent';
@@ -397,7 +397,7 @@ function renderProgressTable(chartKey) {
   });
 
   // Hide the "Progress" header column for achievementOnly sections
-  const listEl   = document.getElementById('list-' + chartKey);
+  const listEl = document.getElementById('list-' + chartKey);
   const headerEl = listEl && listEl.previousElementSibling;
   if (headerEl && headerEl.classList.contains('leader-list-header')) {
     const barHeader = headerEl.querySelector('.leader-list-header-bar');
@@ -741,9 +741,9 @@ function syncOverviewDropdowns() {
   const isCohort = mode === 'cohort';
 
   const cohortGroup = document.getElementById('ov-cohort-group');
-  const monthGroup  = document.getElementById('ov-month-group');
+  const monthGroup = document.getElementById('ov-month-group');
   if (cohortGroup) cohortGroup.style.display = isCohort ? '' : 'none';
-  if (monthGroup)  monthGroup.style.display  = isCohort ? 'none' : '';
+  if (monthGroup) monthGroup.style.display = isCohort ? 'none' : '';
 
   if (isCohort) {
     const rows = datasets.fullPaymentCohort;
@@ -758,7 +758,7 @@ function renderOverviewPanel() {
   const body = document.getElementById('overview-body');
   if (!body) return;
 
-  const mode     = document.getElementById('ov-fp-type')?.value || 'cohort';
+  const mode = document.getElementById('ov-fp-type')?.value || 'cohort';
   const isCohort = mode === 'cohort';
 
   // Source dataset + filter selection
@@ -772,9 +772,9 @@ function renderOverviewPanel() {
   }
 
   // Column names depend on mode
-  const targetCol   = isCohort ? 'Cohort Enrollment Target'    : 'Month Enrollment Target';
-  const achievedCol = isCohort ? 'Cohort Enrollment Acheived'  : 'Month Enrollment Acheived';
-  const pctCol      = isCohort ? 'Cohort Enrollment Acheivement %' : 'Month Enrollment Acheivement %';
+  const targetCol = isCohort ? 'Cohort Enrollment Target' : 'Month Enrollment Target';
+  const achievedCol = isCohort ? 'Cohort Enrollment Acheived' : 'Month Enrollment Acheived';
+  const pctCol = isCohort ? 'Cohort Enrollment Acheivement %' : 'Month Enrollment Acheivement %';
 
   // Collect all unique programs present in the dataset
   const programs = uniqueValues(sourceRows, 'Program Name').sort((a, b) => a.localeCompare(b));
@@ -786,11 +786,11 @@ function renderOverviewPanel() {
 
   const rows = programs.map((prog, idx) => {
     const progRows = filterData(sourceRows, { 'Program Name': prog });
-    const target   = progRows.reduce((s, r) => s + toNumber(firstDefined(r, targetCol)),   0);
+    const target = progRows.reduce((s, r) => s + toNumber(firstDefined(r, targetCol)), 0);
     const achieved = progRows.reduce((s, r) => s + toNumber(firstDefined(r, achievedCol)), 0);
     // Try reading pct directly; fall back to computed
-    const pctRaw   = toPercent(firstDefined(progRows[0] || {}, pctCol));
-    const pct      = pctRaw > 0 ? pctRaw : (target > 0 ? (achieved / target) * 100 : 0);
+    const pctRaw = toPercent(firstDefined(progRows[0] || {}, pctCol));
+    const pct = pctRaw > 0 ? pctRaw : (target > 0 ? (achieved / target) * 100 : 0);
     const pctClamped = clamp(pct, 0, 100);
     const colorIdx = idx % OV_COLORS;
 
@@ -799,9 +799,9 @@ function renderOverviewPanel() {
     const tlNames = collectUniqueLeaderNames(tlProgRows, ['TL Name', 'TL NAME']);
     const tlChipsHtml = tlNames.length
       ? tlNames.map((name) => {
-          const initials = getInitials(name);
-          return `<span class="ov-tl-chip" data-initials="${escapeHtml(initials)}" title="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></span>`;
-        }).join('')
+        const initials = getInitials(name);
+        return `<span class="ov-tl-chip" data-initials="${escapeHtml(initials)}" title="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></span>`;
+      }).join('')
       : '';
 
     return `
